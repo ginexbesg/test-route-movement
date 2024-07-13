@@ -1,0 +1,122 @@
+// src/ThreeCanvas.js
+import React, { useEffect, useRef } from "react";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls } from "@react-three/drei";
+import * as THREE from "three";
+
+// Define the polygon as an array of coordinates
+const polygonCoordinates = [
+  { x: -5, y: -5, z: 0 },
+  { x: 5, y: -5, z: 0 },
+  { x: 5, y: 5, z: 0 },
+  { x: -5, y: 5, z: 0 },
+];
+
+// Example routes, ensure these coordinates are within the polygon bounds
+const routes = [
+  [
+    { x: -4, y: -4, z: 0 },
+    { x: -3, y: -3, z: 0 },
+    { x: -2, y: -4, z: 0 },
+    { x: -1, y: -3, z: 0 },
+    { x: 0, y: -4, z: 0 },
+    { x: 1, y: -3, z: 0 },
+    { x: 2, y: -4, z: 0 },
+    { x: 3, y: -3, z: 0 },
+    { x: 4, y: -4, z: 0 },
+    { x: 4.5, y: -3.5, z: 0 },
+  ],
+  [
+    { x: -4, y: 4, z: 0 },
+    { x: -3, y: 3, z: 0 },
+    { x: -2, y: 4, z: 0 },
+    { x: -1, y: 3, z: 0 },
+    { x: 0, y: 4, z: 0 },
+    { x: 1, y: 3, z: 0 },
+    { x: 2, y: 4, z: 0 },
+    { x: 3, y: 3, z: 0 },
+    { x: 4, y: 4, z: 0 },
+    { x: 4.5, y: 3.5, z: 0 },
+  ],
+  // Add more routes as needed
+];
+
+const Polygon = ({ coordinates, color }) => {
+  const lineRef = useRef();
+
+  useEffect(() => {
+    const points = coordinates.map(
+      (coord) => new THREE.Vector3(coord.x, coord.y, coord.z)
+    );
+    const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+    lineRef.current.geometry = lineGeometry;
+  }, [coordinates]);
+
+  return (
+    <line ref={lineRef}>
+      <lineBasicMaterial color={color} />
+    </line>
+  );
+};
+
+const Route = ({ coordinates, color }) => {
+  const lineRef = useRef();
+
+  useEffect(() => {
+    const points = coordinates.map(
+      (coord) => new THREE.Vector3(coord.x, coord.y, coord.z)
+    );
+    const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+    lineRef.current.geometry = lineGeometry;
+  }, [coordinates]);
+
+  return (
+    <>
+      {coordinates.map((coord, index) => (
+        <mesh key={index} position={[coord.x, coord.y, coord.z]}>
+          <circleGeometry args={[0.1, 32]} />
+          <meshBasicMaterial color={color} />
+        </mesh>
+      ))}
+      <line ref={lineRef}>
+        <lineBasicMaterial color={color} />
+      </line>
+    </>
+  );
+};
+
+const CirclesAndLines = () => {
+  return (
+    <>
+      <Polygon coordinates={polygonCoordinates} color="black" />
+      {routes.map((route, index) => (
+        <Route
+          key={index}
+          coordinates={route}
+          color={`hsl(${(index * 36) % 360}, 100%, 50%)`}
+        />
+      ))}
+    </>
+  );
+};
+
+const Scene = () => {
+  return (
+    <Canvas>
+      <ambientLight intensity={0.5} />
+      <pointLight position={[10, 10, 10]} />
+      <OrbitControls />
+      <CirclesAndLines />
+    </Canvas>
+  );
+};
+
+const ThreeCanvas = () => {
+  return (
+    <div style={{ width: "100vw", height: "100vh" }}>
+      <Scene />
+    </div>
+  );
+};
+
+export default ThreeCanvas;
