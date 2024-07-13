@@ -112,7 +112,7 @@ const Route = ({ coordinates, color, passedIndices }) => {
   );
 };
 
-const Car = ({ path, speed, onPassIndex }) => {
+const Car = ({ path, speed, onPassIndex, passedIndices }) => {
   const carRef = useRef();
   const carTexture = useLoader(THREE.TextureLoader, "/car.png");
 
@@ -149,10 +149,11 @@ const Car = ({ path, speed, onPassIndex }) => {
       }
 
       // Increment progress based on speed
-      setProgress(
-        (prevProgress) =>
-          (prevProgress + progressIncrementPerFrame) % points.length
-      );
+      passedIndices?.length != points?.length &&
+        setProgress(
+          (prevProgress) =>
+            (prevProgress + progressIncrementPerFrame) % points.length
+        );
     }
   });
 
@@ -181,9 +182,14 @@ const CirclesAndLines = () => {
         color="blue"
         passedIndices={passedIndices}
       />
-      {passedIndices?.length != robotPath?.length && (
-        <Car path={robotPath} speed={0.25} onPassIndex={handlePassIndex} />
-      )}
+      {
+        <Car
+          path={robotPath}
+          speed={0.25}
+          onPassIndex={handlePassIndex}
+          passedIndices={passedIndices}
+        />
+      }
     </>
   );
 };
