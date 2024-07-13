@@ -1,9 +1,8 @@
-import React, { useEffect, useRef, useMemo } from "react";
+import React, { useEffect, useRef, useMemo, useState } from "react";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import Route from "./route"; // Assuming Route component is in a separate file
 import * as THREE from "three";
-// Define the polygon as an array of coordinates
+
 const polygonCoordinates = [
   { x: -10, y: -5, z: 0 },
   { x: 10, y: -5, z: 0 },
@@ -11,7 +10,6 @@ const polygonCoordinates = [
   { x: -10, y: 5, z: 0 },
 ];
 
-// Define the robot movement path inside the polygon
 const robotPath = [
   { x: 9, y: 1, z: 0 },
   { x: 8, y: 1, z: 0 },
@@ -66,6 +64,7 @@ const robotPath = [
   { x: 1, y: -3, z: 0 },
   { x: 0, y: -3, z: 0 },
 ];
+
 const Polygon = ({ coordinates, color }) => {
   const lineRef = useRef();
 
@@ -83,32 +82,77 @@ const Polygon = ({ coordinates, color }) => {
     </line>
   );
 };
-const Car = ({ path, speed }) => {
+
+const Route = ({ coordinates, color, passedIndices }) => {
+  const lineRef = useRef();
+
+  //   console.log("passedIndices in route..", passedIndices);
+  useEffect(() => {
+    const points = coordinates.map(
+      (coord) => new THREE.Vector3(coord.x, coord.y, coord.z)
+    );
+    const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+    lineRef.current.geometry = lineGeometry;
+  }, [coordinates]);
+
+  return (
+    <>
+      {coordinates.map((coord, index) => (
+        <mesh key={index} position={[coord.x, coord.y, coord.z]}>
+          <circleGeometry args={[0.1, 32]} />
+          <meshBasicMaterial
+            color={passedIndices.includes(index) ? "green" : color}
+          />
+        </mesh>
+      ))}
+      <line ref={lineRef}>
+        <lineBasicMaterial color={color} />
+      </line>
+    </>
+  );
+};
+
+const Car = ({ path, speed, onPassIndex }) => {
   const carRef = useRef();
-  const carTexture = useLoader(THREE.TextureLoader, "/car.png"); // Replace with your car image path
+  const carTexture = useLoader(THREE.TextureLoader, "/car.png");
+
+  //   const [passedIndices, setPassedIndices] = useState([]);
 
   const points = useMemo(
     () => path.map((p) => new THREE.Vector3(p.x, p.y, p.z)),
     [path]
   );
-  let progress = 0;
+
   const framesPerSecond = 60;
-  const progressIncrementPerFrame = 1 / (framesPerSecond * speed); // progress to move through one circle in 1 second
+  const progressIncrementPerFrame = 1 / (framesPerSecond * speed);
+  const [progress, setProgress] = useState(0);
 
   useFrame(() => {
     if (carRef.current) {
-      const pointIndex = Math.floor(progress);
+      const pointIndex = Math.floor(progress) % points.length;
       const nextPointIndex = (pointIndex + 1) % points.length;
       const currentPoint = points[pointIndex];
       const nextPoint = points[nextPointIndex];
+
       carRef.current.position.lerpVectors(
         currentPoint,
         nextPoint,
         progress - pointIndex
       );
 
-      progress += progressIncrementPerFrame;
-      if (progress >= points.length) progress = 0;
+      // Check if the car has passed the current point index
+      if (
+        Math.floor(progress) !==
+        Math.floor(progress + progressIncrementPerFrame)
+      ) {
+        onPassIndex(pointIndex); // Notify parent component about passing an index
+      }
+
+      // Increment progress based on speed
+      setProgress(
+        (prevProgress) =>
+          (prevProgress + progressIncrementPerFrame) % points.length
+      );
     }
   });
 
@@ -119,17 +163,27 @@ const Car = ({ path, speed }) => {
     </mesh>
   );
 };
+
 const CirclesAndLines = () => {
+  const [passedIndices, setPassedIndices] = useState([]);
+
+  const handlePassIndex = (index) => {
+    if (!passedIndices.includes(index)) {
+      setPassedIndices((prevIndices) => [...prevIndices, index]);
+    }
+  };
+
   return (
     <>
-      {/* Render the polygon */}
       <Polygon coordinates={polygonCoordinates} color="black" />
-
-      {/* Render the modified Route component with a different line color */}
-      <Route coordinates={robotPath} lineColor="red" />
-
-      {/* Render the Car component */}
-      <Car path={robotPath} speed={0.25} />
+      <Route
+        coordinates={robotPath}
+        color="blue"
+        passedIndices={passedIndices}
+      />
+      {passedIndices?.length != robotPath?.length && (
+        <Car path={robotPath} speed={0.25} onPassIndex={handlePassIndex} />
+      )}
     </>
   );
 };
