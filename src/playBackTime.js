@@ -499,7 +499,7 @@ const Route = ({ coordinates, color, passedIndices, currentPoint }) => {
     const remainingCoordinates = visiblePoints.filter(
       (_, index) => !passedIndices.includes(index)
     );
-    console.log("remaining...", remainingCoordinates);
+
     if (lineRef.current) {
       const points = coordinates
         .filter((eachCor, index) => {
@@ -625,7 +625,6 @@ const CirclesAndLines = () => {
         return Math.min(currentPoint, index) + i; // Create array of indices in range
       }
     );
-    console.log("passedIndices...", passedIndices);
 
     setPassedIndices((prev) => prev.filter((i) => rangeToRemove.includes(i)));
   };
