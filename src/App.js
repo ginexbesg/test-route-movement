@@ -7,7 +7,8 @@ import "./App.css";
 // import ThreeCanvas from "./ThreeCanvas";
 // import ThreeCanvas from "./checkAlreadyPassed";
 // import ThreeCanvas from "./changeColor";
-import ThreeCanvas from "./changeColorForLine";
+// import ThreeCanvas from "./changeColorForLine";
+import ThreeCanvas from "./removeLineIfPassed";
 
 function App() {
   return (
