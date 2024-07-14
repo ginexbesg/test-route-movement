@@ -5,8 +5,9 @@ import "./App.css";
 // import ThreeCanvas from "./polygonDrawLines";
 // import ThreeCanvas from "./polygonExample";
 // import ThreeCanvas from "./ThreeCanvas";
-import ThreeCanvas from "./checkAlreadyPassed";
+// import ThreeCanvas from "./checkAlreadyPassed";
 // import ThreeCanvas from "./changeColor";
+import ThreeCanvas from "./changeColorForLine";
 
 function App() {
   return (
