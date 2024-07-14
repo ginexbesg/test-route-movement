@@ -178,7 +178,7 @@ const Car = ({ path, speed, onPassIndex, passedIndices }) => {
 
       // Increment progress based on speed
       passedIndices?.length !== points?.length &&
-        pointIndex != points.length - 1 &&
+        pointIndex !== points.length - 1 &&
         setProgress(
           (prevProgress) =>
             (prevProgress + progressIncrementPerFrame) % points.length
@@ -214,7 +214,7 @@ const CirclesAndLines = () => {
       {
         <Car
           path={robotPath}
-          speed={0.25}
+          speed={0.25} //0.25 means 1 second has four circle dot points
           onPassIndex={handlePassIndex}
           passedIndices={passedIndices}
         />
