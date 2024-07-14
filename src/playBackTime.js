@@ -4,10 +4,10 @@ import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import { Html } from "@react-three/drei";
 const polygonCoordinates = [
-  { x: -10, y: -5, z: 0 },
+  { x: -1, y: -5, z: 0 },
   { x: 10, y: -5, z: 0 },
   { x: 10, y: 5, z: 0 },
-  { x: -10, y: 5, z: 0 },
+  { x: -1, y: 5, z: 0 },
 ];
 
 const robotPath = [
@@ -646,12 +646,12 @@ const CirclesAndLines = () => {
         currentPoint={currentPoint}
       />
       {/* Buttons should be rendered in the React component tree, not in Three.js */}
-      <Html position={[0, 0, 0]} style={{ pointerEvents: "auto", zIndex: 1 }}>
+      <Html position={[-1, 0, 0]} style={{ pointerEvents: "auto", zIndex: 1 }}>
         <div
           style={{
             display: "flex",
             flexDirection: "row",
-            position: "absolute",
+            position: "relative",
             top: "10px",
             left: "10px",
           }}
